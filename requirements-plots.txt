@@ -1,0 +1,7 @@
+numpy==1.26.4
+pandas==1.5.3
+scipy==1.13.1
+scikit-learn==1.2.2
+matplotlib==3.9.4
+seaborn==0.13.2
+Orange3==3.30.2
