@@ -765,4 +765,60 @@ def update_nodes_for_baseline(nodes):
 
         node.overlap_features = G
 
-    return True, G    
+    return True, G  
+    
+    
+
+def stratified_sample(df, target_col, n_total=N_TARGET, random_state=SEED):
+    df_strat, _ = train_test_split(
+        df,
+        train_size=n_total,
+        stratify=df[target_col],
+        random_state=random_state,
+    )
+    return df_strat
+
+
+def balanced_sample(df, target_col, n_total=N_TARGET, random_state=SEED):
+    classes = sorted(df[target_col].unique())
+    k = len(classes)
+
+    counts = df[target_col].value_counts()
+
+    # base per-class and how many leftovers to distribute
+    base = n_total // k
+    leftover = n_total % k  # distribute +1 to first 'leftover' classes
+
+    # how many from each class
+    per_class = {}
+    for i, c in enumerate(classes):
+        need = base + (1 if i < leftover else 0)
+        if need > counts[c]:
+            raise ValueError(
+                f"Not enough samples in class {c} to draw {need}. "
+                f"Available: {counts[c]}"
+            )
+        per_class[c] = need
+
+    parts = []
+
+    rs = random_state
+    for c in classes:
+        parts.append(
+            df[df[target_col] == c].sample(
+                n=per_class[c],
+                random_state=rs
+            )
+        )
+        rs += 1
+
+    # concatenate and shuffle
+    df_bal = (
+        pd.concat(parts)
+        .sample(frac=1, random_state=random_state + 999)
+        .reset_index(drop=True)
+    )
+
+    assert len(df_bal) == n_total, "Balanced subset does not have desired size."
+
+    return df_bal

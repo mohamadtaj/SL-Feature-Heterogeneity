@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from scipy.io.arff import loadarff
 from sklearn.model_selection import train_test_split
+from utils import stratified_sample, balanced_sample
 
 
 def load_dataset (dataset):
@@ -176,8 +177,22 @@ def load_dataset (dataset):
 #----------------------------------------------------------------------------------------------------------------------     
 
     elif (dataset == 'cdc_3class_balanced'):
+    
+        N_TARGET = 1000
+        SEED = 42
+        
         path = './data/cdc_3class_balanced'
-        df = pd.read_csv(os.path.join(path, 'cdc_3class_balanced.csv')) 
+        
+        raw_filename = 'diabetes_012_health_indicators_BRFSS2015.csv'
+        df_raw = pd.read_csv(os.path.join(path, raw_filename))
+        
+        df = balanced_sample(
+                    df_raw, 
+                    target_col="Diabetes_012",
+                    n_total=N_TARGET, 
+                    random_state=SEED + 1
+                )        
+
         first_col = df.columns[0]
         df = df[[col for col in df.columns if col != first_col] + [first_col]]
         
@@ -191,8 +206,22 @@ def load_dataset (dataset):
 #----------------------------------------------------------------------------------------------------------------------  
 
     elif (dataset == 'cdc_binary5050_stratified'):
+    
+        N_TARGET = 1000
+        SEED = 42
+    
         path = './data/cdc_binary5050_stratified'
-        df = pd.read_csv(os.path.join(path, 'cdc_binary5050_stratified.csv')) 
+        
+        raw_filename = 'diabetes_binary_5050split_health_indicators_BRFSS2015.csv'
+        df_raw = pd.read_csv(os.path.join(path, raw_filename))
+
+        df = stratified_sample(
+                    df_raw, 
+                    target_col="Diabetes_binary", 
+                    n_total=N_TARGET, 
+                    random_state=SEED + 2
+                )
+        
         first_col = df.columns[0]
         df = df[[col for col in df.columns if col != first_col] + [first_col]]
         
@@ -203,6 +232,5 @@ def load_dataset (dataset):
             for col in cols
         }
 
-        
 #--------------------------------------------------------------------------------------------------------------------- 
     return df, feature_type_dict
