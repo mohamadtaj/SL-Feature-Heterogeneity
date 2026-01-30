@@ -67,7 +67,7 @@ launch_one () {
 
   stdbuf -oL -eL python -u run.py \
     --dataset "$ds" \
-    --overlap_percentage "$ov" \
+    --jaccard "$ov" \
     --method "$m" \
     --nodes "$nn" \
     >"$out" 2>&1
