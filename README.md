@@ -37,21 +37,25 @@ Please download the following datasets and place the CSV files in their respecti
 ## Installation
 
 ### Experiment Environment
-Set up the primary environment for running simulations:
+We recommend using **Conda** (or Mamba) to manage environments. Set up the primary environment for running simulations:
 
 ```
-python -m venv .venv_exp
-source .venv_exp/bin/activate
-python -m pip install -r requirements.txt
+# Create experiment environment (Python 3.11.6)
+conda create -n slfh-exp python=3.11.6 -y
+conda activate slfh-exp
+pip install -r requirements.txt
+conda deactivate
 ```
 
 ### Plotting Environment
 To isolate dependencies (e.g., `Orange3`), a separate environment for plotting is recommended:
 
 ```
-python -m venv .venv_plot
-source .venv_plot/bin/activate
-python -m pip install -r requirements-plots.txt
+# Create plotting environment (Python 3.9.23)
+conda create -n slfh-plot python=3.9.23 -y
+conda activate slfh-plot
+pip install -r requirements-plots.txt
+conda deactivate
 ```
 
 ## Running Experiments
@@ -60,7 +64,7 @@ python -m pip install -r requirements-plots.txt
 Navigate to the `apps` directory and use `run.py` to execute a specific scenario.
 ```
 # Activate environment (if not already active)
-source .venv_exp/bin/activate
+conda activate slfh-exp
 
 # Enter the application folder
 cd apps
@@ -106,9 +110,10 @@ The following methods are supported for handling missing features during inferen
 Experiment results are saved as `.npy` files in the `results/` directory. To generate the plots presented in the paper:
 ```
 # Activate plotting environment
-source .venv_plot/bin/activate
+conda activate slfh-plot
 
 # Generate plots
+cd apps
 python make_plots.py
 ```
 Generated figures will be saved to the `plots/` directory.
